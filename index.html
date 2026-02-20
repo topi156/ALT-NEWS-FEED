@@ -852,6 +852,25 @@ body::before {
   .hero-story { border-right: none; border-bottom: 1px solid var(--rule); padding: 0 0 20px; }
   .masthead { padding: 0 20px; }
 }
+
+.article-why {
+  font-size: 12px;
+  color: var(--ink-dim);
+  margin: 4px 0 8px;
+  line-height: 1.5;
+  padding: 5px 10px;
+  border-left: 2px solid var(--accent);
+  background: rgba(196,56,26,0.03);
+}
+.why-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  font-weight: 700;
+  margin-right: 6px;
+}
 </style>
 </head>
 <body>
@@ -875,8 +894,7 @@ body::before {
     </div>
   </div>
   <nav class="masthead-nav">
-    <button class="nav-item" id="btn-live" data-s="live" onclick="filter('live',this)">Live Briefing</button>
-    <button class="nav-item" id="btn-all" data-s="all" onclick="filter('all',this)">All Sectors</button>
+    <button class="nav-item active" data-s="all" onclick="filter('all',this)">All Sectors</button>
     <button class="nav-item" data-s="PE" onclick="filter('PE',this)">Private Equity</button>
     <button class="nav-item" data-s="Credit" onclick="filter('Credit',this)">Private Credit</button>
     <button class="nav-item" data-s="Infra" onclick="filter('Infra',this)">Infrastructure</button>
@@ -1007,118 +1025,50 @@ body::before {
 // RSS FEEDS — real articles, no backend needed
 // ─────────────────────────────────────
 const RSS_FEEDS = [
-  // ── PE ──────────────────────────────────────────────────────────────────
-  { url: "https://www.privateequitywire.co.uk/feed/",         source: "PE Wire",         sector: "PE",    paywall: true  },
-  { url: "https://www.buyoutsinsider.com/feed/",              source: "Buyouts Insider", sector: "PE",    paywall: true  },
-  { url: "https://www.privateequityinternational.com/feed/",  source: "PEI",             sector: "PE",    paywall: true  },
-  { url: "https://unquote.com/feeds/rss",                     source: "Unquote",         sector: "PE",    paywall: true  },
-  { url: "https://altassets.net/feed",                        source: "AltAssets",       sector: "PE",    paywall: false },
-  { url: "https://pitchbook.com/blog/rss.xml",                source: "PitchBook",       sector: "PE",    paywall: false },
-  { url: "https://corpgov.law.harvard.edu/feed/",             source: "Harvard Law",     sector: "PE",    paywall: false },
-  { url: "https://www.theguardian.com/business/privateequity/rss", source: "Guardian PE", sector: "PE",  paywall: false },
+  // ── PE ──────────────────────────────────────────────
+  { url: "https://www.privateequitywire.co.uk/feed/",                source: "PE Wire",         sector: "PE",    paywall: true  },
+  { url: "https://www.buyoutsinsider.com/feed/",                     source: "Buyouts Insider", sector: "PE",    paywall: true  },
+  { url: "https://www.privateequityinternational.com/feed/",         source: "PEI",             sector: "PE",    paywall: true  },
+  { url: "https://altassets.net/feed",                               source: "AltAssets",       sector: "PE",    paywall: false },
+  { url: "https://pitchbook.com/blog/rss.xml",                       source: "PitchBook",       sector: "PE",    paywall: false },
+  { url: "https://www.theguardian.com/business/privateequity/rss",   source: "Guardian PE",     sector: "PE",    paywall: false },
+  { url: "https://businesswire.com/rss/home/rss_homepage.rss",       source: "Business Wire",   sector: "PE",    paywall: false },
+  { url: "https://www.pehub.com/feed/",                             source: "PE Hub",          sector: "PE",    paywall: false },
 
-  // ── Infrastructure ───────────────────────────────────────────────────────
-  { url: "https://www.infrastructureinvestor.com/feed/",      source: "Infra Investor",  sector: "Infra", paywall: true  },
-  { url: "https://www.ijglobal.com/rss",                      source: "IJGlobal",        sector: "Infra", paywall: true  },
-  { url: "https://renewablesnow.com/news/rss/",               source: "Renewables Now",  sector: "Infra", paywall: false },
-  { url: "https://www.rechargenews.com/rss",                  source: "Recharge News",   sector: "Infra", paywall: false },
+  // ── Infrastructure ──────────────────────────────────
+  { url: "https://www.infrastructureinvestor.com/feed/",             source: "Infra Investor",  sector: "Infra", paywall: true  },
+  { url: "https://renewablesnow.com/news/rss/",                      source: "Renewables Now",  sector: "Infra", paywall: false },
+  { url: "https://www.rechargenews.com/rss",                         source: "Recharge News",   sector: "Infra", paywall: false },
+  { url: "https://www.pv-tech.org/feed/",                            source: "PV Tech",         sector: "Infra", paywall: false },
 
-  // ── Real Estate ──────────────────────────────────────────────────────────
-  { url: "https://www.perenews.com/feed/",                    source: "PERE News",       sector: "RE",    paywall: true  },
-  { url: "https://therealdeal.com/feed/",                     source: "The Real Deal",   sector: "RE",    paywall: false },
-  { url: "https://www.globest.com/feed/",                     source: "GlobeSt",         sector: "RE",    paywall: false },
-  { url: "https://www.bisnow.com/rss",                        source: "Bisnow",          sector: "RE",    paywall: false },
+  // ── Real Estate ─────────────────────────────────────
+  { url: "https://www.perenews.com/feed/",                           source: "PERE News",       sector: "RE",    paywall: true  },
+  { url: "https://therealdeal.com/feed/",                            source: "The Real Deal",   sector: "RE",    paywall: false },
+  { url: "https://www.globest.com/feed/",                            source: "GlobeSt",         sector: "RE",    paywall: false },
+  { url: "https://www.commercialobserver.com/feed/",                 source: "Commercial Observer", sector: "RE", paywall: false },
 
-  // ── Private Credit ──────────────────────────────────────────────────────
-  { url: "https://www.fnlondon.com/rss",                      source: "FN London",       sector: "Credit", paywall: true },
+  // ── Hedge / Credit ──────────────────────────────────
+  { url: "https://opalesque.com/rss.xml",                            source: "Opalesque",       sector: "Hedge", paywall: false },
+  { url: "https://www.fnlondon.com/rss",                             source: "FN London",       sector: "Credit",paywall: true  },
 
-  // ── Hedge Funds ─────────────────────────────────────────────────────────
-  { url: "https://opalesque.com/rss.xml",                     source: "Opalesque",       sector: "Hedge", paywall: false },
+  // ── Harder to reach — need corsproxy fallback ────────
+  { url: "https://www.ft.com/stream/ab70c42c-4d60-4851-89bb-16e2daeddfc1?format=rss", source: "FT Private Equity", sector: "PE",    paywall: true  },
+  { url: "https://www.cnbc.com/id/10001147/device/rss/rss.html",                      source: "CNBC",             sector: "Macro", paywall: false },
+  { url: "https://unquote.com/feeds/rss",                                              source: "Unquote",          sector: "PE",    paywall: true  },
+  { url: "https://feeds.content.dowjones.io/public/rss/RSSMarketsMain",               source: "WSJ Markets",      sector: "Macro", paywall: true  },
 
-  // ── Macro / Multi-sector ────────────────────────────────────────────────
-  { url: "https://feeds.reuters.com/reuters/businessNews",    source: "Reuters",         sector: "Macro", paywall: false },
-  { url: "https://feeds.reuters.com/reuters/financialNews",   source: "Reuters Finance", sector: "Macro", paywall: false },
-  { url: "https://feeds.content.dowjones.io/public/rss/RSSMarketsMain",   source: "WSJ Markets",  sector: "Macro", paywall: true },
-  { url: "https://feeds.content.dowjones.io/public/rss/WSJcomUSBusiness", source: "WSJ Business", sector: "PE",    paywall: true },
-  { url: "https://businesswire.com/rss/home/rss_homepage.rss", source: "Business Wire", sector: "PE",    paywall: false },
-
-  // ── Additional open feeds ────────────────────────────────────────────────
-  { url: "https://www.propmodo.com/feed/",                    source: "Propmodo",        sector: "RE",    paywall: false },
-  { url: "https://www.commercialobserver.com/feed/",          source: "Commercial Observer", sector: "RE", paywall: false },
-  { url: "https://www.infrastructureintelligence.com/rss.xml",source: "Infra Intelligence", sector: "Infra", paywall: false },
-  { url: "https://www.spglobal.com/marketintelligence/en/rss/topic/private-equity", source: "S&P Global PE", sector: "PE", paywall: false },
-  { url: "https://www.axios.com/feeds/feed.rss",              source: "Axios",           sector: "Macro", paywall: false },
+  // ── Macro / Multi ───────────────────────────────────
+  { url: "https://feeds.reuters.com/reuters/businessNews",           source: "Reuters",         sector: "Macro", paywall: false },
+  { url: "https://feeds.reuters.com/reuters/financialNews",          source: "Reuters Finance", sector: "Macro", paywall: false },
+  { url: "https://news.google.com/rss/search?q=pitchbook+%22private+equity%22+OR+%22private+credit%22+OR+%22venture+capital%22&hl=en-US&gl=US&ceid=US:en", source: "PitchBook News", sector: "PE", paywall: false },
+  { url: "https://news.google.com/rss/search?q=%22cambridge+associates%22+%22private+equity%22+OR+%22private+markets%22+OR+%22alternatives%22&hl=en-US&gl=US&ceid=US:en", source: "Cambridge Associates", sector: "Macro", paywall: false },
 ];
 
+const RSS2JSON = "https://api.rss2json.com/v1/api.json?rss_url=";
 
 
 // Time window filter (last N days)
 const MAX_DAYS = 30;
-
-// ─────────────────────────────────────
-// Investor Briefing mode
-// ─────────────────────────────────────
-const BRIEFING_MODE = true;                // Live filtered feed + daily brief
-const QUALITY_THRESHOLD_LIVE = 60;         // show only strong signals in Live view
-const LIVE_MAX_ITEMS = 12;                 // cap Live view
-const DAILY_BRIEF_HOUR_LOCAL = 9;          // auto-generate after 09:00 local time
-const DAILY_BRIEF_MAX_ITEMS = 8;           // number of stories in daily brief
-
-// Source tiers (tune as needed)
-const TIER1 = [
-  'Financial Times','FT','Reuters','Bloomberg','PEI','Private Equity International',
-  'Secondaries Investor','Infrastructure Investor','Real Estate Capital',
-  'PE Wire','Private Equity Wire','Buyouts','PitchBook'
-];
-const TIER2 = [
-  'Institutional Investor','Unquote','AltAssets','PE Hub','WSJ','Wall Street Journal',
-  'The Economist','Fortune','Axios'
-];
-
-// High-signal / low-signal language
-const HIGH_SIGNAL_RE = /(first close|final close|hard cap|fundraise|raised|closing|close[d]? on|take-?private|lbo|acquir|sale|divest|ipo|continuation|gp-led|secondaries|nav (loan|facility)|subscription line|refinanc|redemption|gate|liquidity|distress|default|restructur|leverage|unitranche|direct lending|private credit|aum|ir{2}|tvpi|dpi|valuation|multiple)/i;
-const LOW_SIGNAL_RE  = /(podcast|sponsored|advertis|webinar|catch up|opinion|substack|newsletter only)/i;
-
-// Basic theme classifier for Daily Brief
-function classifyTheme(a) {
-  const t = ((a.title||'') + ' ' + (a.body||'')).toLowerCase();
-  if (/(redemption|gate|liquidity|default|distress|restructur)/i.test(t)) return 'Liquidity / Stress';
-  if (/(fundraise|first close|final close|hard cap|close[d]? on|raised)/i.test(t)) return 'Fundraising';
-  if (/(nav (loan|facility)|subscription line|direct lending|private credit|unitranche|leveraged loan)/i.test(t)) return 'Credit / Financing';
-  if (/(take-?private|lbo|acquir|sale|divest|ipo|merger|m&a)/i.test(t)) return 'Transactions';
-  if (/(gp stakes|stake sale|minority stake|gp-led|continuation|secondaries)/i.test(t)) return 'Secondaries / GP Stakes';
-  if (/(ai|artificial intelligence|data center|datacenter)/i.test(t)) return 'AI Impact';
-  return 'Market';
-}
-
-function sourceTierScore(source) {
-  const s = (source || '').toLowerCase();
-  if (TIER1.some(x => s.includes(x.toLowerCase()))) return 30;
-  if (TIER2.some(x => s.includes(x.toLowerCase()))) return 20;
-  if (s.includes('google')) return 6;
-  return 12;
-}
-
-function qualityScore(a) {
-  const text = ((a.title||'') + ' ' + (a.body||'')).toLowerCase();
-  let score = 10;
-  score += sourceTierScore(a.source);
-  if (HIGH_SIGNAL_RE.test(text)) score += 30;
-  if (LOW_SIGNAL_RE.test(text)) score -= 20;
-
-  // Sector hints
-  if (a.sector === 'PE') score += 4;
-  if (a.sector === 'Credit') score += 4;
-  if (a.sector === 'Infra' || a.sector === 'RE') score += 2;
-
-  // Freshness bonus (within 24h)
-  if (a._ts && (Date.now() - a._ts) <= 24*60*60*1000) score += 6;
-
-  // Paywall penalty if there are alternatives in dedup (handled elsewhere), mild here
-  if (a.paywall) score -= 3;
-
-  return Math.max(0, Math.min(100, score));
-}
 const AI_ENABLED = true; // requires proxy
 const API_BASE = ""; // set to proxy base URL, e.g. https://your-proxy
 
@@ -1204,77 +1154,25 @@ function isAltRelevant(item) {
 
 // Alt-markets allowlist filter (to keep feed strictly alternatives) 
 function guessSector(title, body, defaultSector) {
-  const text = (title + " " + body).toLowerCase();
+  const t = ((title||'') + ' ' + (body||'')).toLowerCase();
 
-  // Credit first (avoid "Breit" → reit false positives)
-  if (
-    text.includes("private credit") || text.includes("direct lending") ||
-    text.includes("private debt")   || text.includes("leveraged loan") ||
-    text.includes("unitranche")     || text.includes("mezzanine") ||
-    text.includes("distressed debt")|| text.includes("special situations credit") ||
-    (text.includes("credit") && (text.includes("spread") || text.includes("lending") || text.includes("loan")))
-  ) return "Credit";
+  // Credit first — avoid "Breit" falsely matching reit
+  if (/(private credit|direct lending|private debt|unitranche|mezzanine|leveraged loan|bdc|distressed debt)/i.test(t)) return 'Credit';
+  if (/\bcredit\b.*(spread|fund|facility|lending|loan)/i.test(t)) return 'Credit';
 
-  // Infrastructure — broad set of signals
-  if (
-    text.includes("infrastructure") || text.includes("infra fund") ||
-    text.includes("data center")    || text.includes("datacenter") ||
-    text.includes("renewable")      || text.includes("renewables") ||
-    text.includes("energy transition") || text.includes("clean energy") ||
-    text.includes("solar farm")     || text.includes("wind farm") ||
-    text.includes("offshore wind")  || text.includes("onshore wind") ||
-    text.includes("battery storage")|| text.includes("grid storage") ||
-    text.includes("transmission")   || text.includes("power grid") ||
-    text.includes("toll road")      || text.includes("motorway") ||
-    text.includes("airport")        || text.includes("seaport") ||
-    text.includes("pipeline")       || text.includes("lng terminal") ||
-    text.includes("fiber network")  || text.includes("fibre network") ||
-    text.includes("cell tower")     || text.includes("digital infra") ||
-    text.includes("stonepeak")      || text.includes("macquarie infra") ||
-    text.includes("brookfield infra")|| text.includes("gip") ||
-    text.includes("ifm investors")
-  ) return "Infra";
+  // Infrastructure
+  if (/(infrastructure|infra fund|digital infra|data cent(er|re)|renewable(s)?|energy transition|clean energy|solar farm|wind farm|offshore wind|battery storage|power grid|toll road|airport|seaport|pipeline|lng terminal|fiber network|cell tower)/i.test(t)) return 'Infra';
+  if (/(stonepeak|macquarie infra|brookfield infra|\bgip\b|ifm investors)/i.test(t)) return 'Infra';
 
-  // Real Estate — broad set of signals
-  if (
-    text.includes("real estate")    || text.includes("commercial property") ||
-    text.includes("commercial real estate") || text.includes("repe") ||
-    text.includes("multifamily")    || text.includes("residential property") ||
-    text.includes("office building")|| text.includes("office space") ||
-    text.includes("office market")  || text.includes("retail property") ||
-    text.includes("logistics park") || text.includes("warehouse") ||
-    text.includes("industrial estate") || text.includes("build to rent") ||
-    text.includes("build-to-rent")  || text.includes("student housing") ||
-    text.includes("senior housing") || text.includes("data centre") ||
-    text.includes("hospitality asset") || text.includes("hotel portfolio") ||
-    text.includes("self storage")   || text.includes("self-storage") ||
-    text.includes("cap rate")       || text.includes("noi") ||
-    text.includes("vacancy rate")   || text.includes("occupancy rate") ||
-    text.includes("rent growth")    || text.includes("property value") ||
-    text.includes("blackstone real estate") || text.includes("brookfield real estate") ||
-    text.includes("prologis")       || text.includes("hines") ||
-    text.includes("nuveen real estate") ||
-    /reit/.test(text)
-  ) return "RE";
+  // Real Estate
+  if (/(real estate|commercial property|\brepe\b|multifamily|residential property|office (building|market|space)|logistics park|warehouse|build.to.rent|student housing|senior housing|self.storage|cap rate|\bnoi\b|vacancy rate|rent growth)/i.test(t)) return 'RE';
+  if (/\breit\b/i.test(t)) return 'RE';
+  if (/(prologis|hines|cbre|jll|cushman)/i.test(t)) return 'RE';
 
-  // Hedge Funds
-  if (
-    text.includes("hedge fund")     || text.includes("long/short") ||
-    text.includes("multi-strategy") || text.includes("global macro") ||
-    text.includes("quant fund")     || text.includes("systematic fund") ||
-    text.includes("managed futures")|| text.includes("activist investor") ||
-    text.includes("short seller")   || text.includes("event driven") ||
-    text.includes("bridgewater")    || text.includes("citadel") ||
-    text.includes("millennium management") || text.includes("two sigma")
-  ) return "Hedge";
+  // Hedge
+  if (/(hedge fund|long.short|multi.strategy|global macro|quant fund|managed futures|activist investor|short seller|event.driven)/i.test(t)) return 'Hedge';
 
-  // Scoring fallback
-  let best = defaultSector, bestScore = 0;
-  for (const [sector, keywords] of Object.entries(SECTOR_KEYWORDS)) {
-    const score = keywords.filter(kw => text.includes(kw)).length;
-    if (score > bestScore) { bestScore = score; best = sector; }
-  }
-  return best;
+  return defaultSector;
 }
 
 
@@ -1285,7 +1183,7 @@ function estimateRelevance(title, body) {
   return Math.min(55 + allKw.filter(kw => text.includes(kw)).length * 6, 98);
 }
 
-let currentFilter = (typeof BRIEFING_MODE !== 'undefined' && BRIEFING_MODE) ? 'live' : 'all';
+let currentFilter = 'all';
 let briefingText = '';
 let articles = [];
 let nextId = 1;
@@ -1330,332 +1228,109 @@ document.addEventListener('DOMContentLoaded', async () => {
 // LOAD REAL RSS FEEDS
 // ─────────────────────────────────────
 async function fetchFeed(feed) {
-  const { url, source, sector, paywall } = feed;
-  const enc = encodeURIComponent(url);
+  const enc = encodeURIComponent(feed.url);
 
-  const timedFetch = (u, ms=8000) => Promise.race([
-    fetch(u),
-    new Promise((_, r) => setTimeout(() => r(new Error('timeout')), ms))
-  ]);
+  const mapItems = (items, urlField) => items.map(item => ({
+    id: nextId++,
+    title: item.title || '',
+    body: (item.description || item.content || '').replace(/<[^>]+>/g, '').substring(0, 300),
+    url: item[urlField] || item.link || '',
+    source: feed.source,
+    sector: guessSector(item.title || '', item.description || '', feed.sector),
+    rel: estimateRelevance(item.title || '', item.description || ''),
+    time: timeAgo(item.pubDate || item.updated || ''),
+    _pubDate: item.pubDate || item.updated || null,
+    _ts: new Date(item.pubDate || item.updated || 0).getTime() || 0,
+    paywall: feed.paywall || false,
+    aiSummary: null,
+  }));
 
-  const clean = (s) => (s || '')
-    .replace(/<!\[CDATA\[|\]\]>/g, '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'")
-    .replace(/\s+/g,' ').trim();
-
-  const parseXML = (raw) => {
-    const doc = new DOMParser().parseFromString(raw, 'text/xml');
-    if (doc.querySelector('parsererror')) return null;
-
-    // RSS 2.0
-    const items = Array.from(doc.querySelectorAll('item'));
-    if (items.length) return items.map(it => {
-      const title   = clean(it.querySelector('title')?.textContent || '');
-      // <link> in RSS is a text node AFTER the tag, not an attribute
-      const linkNode = it.querySelector('link');
-      const link    = (linkNode?.nextSibling?.nodeValue?.trim() ||
-                       linkNode?.textContent?.trim() ||
-                       it.querySelector('guid')?.textContent?.trim() || '');
-      const body    = clean(it.querySelector('description')?.textContent || '').substring(0, 400);
-      const pubDate = it.querySelector('pubDate')?.textContent?.trim() || '';
-      return { title, link, body, pubDate };
-    }).filter(x => x.title && x.link);
-
-    // Atom
-    const entries = Array.from(doc.querySelectorAll('entry'));
-    return entries.map(en => {
-      const title   = clean(en.querySelector('title')?.textContent || '');
-      const linkEl  = en.querySelector('link[rel="alternate"]') || en.querySelector('link');
-      const link    = linkEl?.getAttribute('href') || linkEl?.textContent?.trim() || '';
-      const body    = clean(en.querySelector('summary')?.textContent || en.querySelector('content')?.textContent || '').substring(0, 400);
-      const pubDate = en.querySelector('updated')?.textContent?.trim() || en.querySelector('published')?.textContent?.trim() || '';
-      return { title, link, body, pubDate };
-    }).filter(x => x.title && x.link);
-  };
-
-  // Proxy chain — ordered by reliability from GitHub Pages
-  const proxies = [
-    // 1. corsproxy.io — works from GitHub Pages, no CORS issues
-    { label: 'corsproxy', fetch: () => timedFetch(`https://corsproxy.io/?${enc}`).then(r => r.text()).then(parseXML) },
-    // 2. allorigins get (JSON wrapper) — sometimes works
-    { label: 'allorigins', fetch: () => timedFetch(`https://api.allorigins.win/get?url=${enc}`)
-        .then(r => r.json()).then(d => parseXML(d.contents || '')) },
-    // 3. rss2json — fast but rate-limits & blocks some feeds
-    { label: 'rss2json', fetch: () => timedFetch(`https://api.rss2json.com/v1/api.json?rss_url=${enc}&count=25`)
-        .then(r => r.json()).then(data => {
-          if (data.status !== 'ok' || !data.items?.length) return null;
-          return data.items.map(it => ({
-            title:   clean(it.title || ''),
-            link:    it.link || '',
-            body:    clean(it.description || it.content || '').substring(0, 400),
-            pubDate: it.pubDate || ''
-          }));
-        })
-    },
-  ];
-
-  for (const proxy of proxies) {
-    try {
-      const items = await proxy.fetch();
-      if (!items?.length) continue;
-      console.log(`✓ ${source}: ${items.length} articles [${proxy.label}]`);
-
-      return items.slice(0, 25).map(item => ({
-        id:       nextId++,
-        title:    item.title,
-        body:     item.body,
-        url:      item.link,
-        source,
-        sector:   guessSector(item.title, item.body, sector),
-        paywall:  !!paywall,
-        time:     timeAgo(item.pubDate),
-        _pubDate: item.pubDate || null,
-        _ts:      new Date(item.pubDate).getTime() || 0,
-        rel: 0, qscore: 0, theme: ''
-      }));
-    } catch(e) {
-      console.warn(`✗ ${source} [${proxy.label}]: ${e.message}`);
+  // ── Proxy 1: rss2json (fast, cached) ──────────────
+  try {
+    const res = await Promise.race([
+      fetch(`${RSS2JSON}${enc}&count=20`),
+      new Promise((_, r) => setTimeout(() => r(new Error('timeout')), 7000))
+    ]);
+    const data = await res.json();
+    if (data.status === 'ok' && data.items?.length) {
+      console.log(`✓ ${feed.source}: ${data.items.length} [rss2json]`);
+      return mapItems(data.items, 'link');
     }
-  }
+  } catch(e) { /* fall through */ }
 
-  console.warn(`Feed failed: ${source}`);
+  // ── Proxy 2: corsproxy.io (works from GitHub Pages, handles FT/CNBC/Bloomberg) ──
+  try {
+    const res = await Promise.race([
+      fetch(`https://corsproxy.io/?${enc}`),
+      new Promise((_, r) => setTimeout(() => r(new Error('timeout')), 8000))
+    ]);
+    const xml = await res.text();
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    if (!doc.querySelector('parsererror')) {
+      const els = Array.from(doc.querySelectorAll('item, entry'));
+      if (els.length) {
+        const items = els.map(el => {
+          const linkEl = el.querySelector('link');
+          const link = linkEl?.getAttribute('href') || linkEl?.textContent?.trim() || el.querySelector('guid')?.textContent?.trim() || '';
+          return {
+            title:       el.querySelector('title')?.textContent?.trim() || '',
+            link,
+            description: (el.querySelector('description')?.textContent || el.querySelector('summary')?.textContent || '').trim(),
+            pubDate:     (el.querySelector('pubDate')?.textContent || el.querySelector('updated')?.textContent || '').trim(),
+          };
+        }).filter(x => x.title && x.link);
+        if (items.length) {
+          console.log(`✓ ${feed.source}: ${items.length} [corsproxy]`);
+          return mapItems(items, 'link');
+        }
+      }
+    }
+  } catch(e) { /* fall through */ }
+
+  console.warn(`✗ Feed failed: ${feed.source}`);
   return [];
 }
 
-
 async function loadArticles(sector = null) {
-  // Show loading state
   document.getElementById('feed-container').innerHTML =
     `<div style="padding:40px 0;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-dim)">Loading live feeds...</div>`;
 
   nextId = 1;
 
-  // Fetch all feeds in parallel
   const results = await Promise.all(RSS_FEEDS.map(fetchFeed));
   let all = results.flat();
 
-  // Filter: last 30 days only
-  all = all.filter(a => isWithinTimeWindow(a._pubDate));
+  // Dedup by URL
+  const seen = new Set();
+  all = all.filter(a => {
+    const k = (a.url || '').split('?')[0];
+    if (!k || seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
 
-  // Filter: alts-focused (but Infra/RE friendly)
-  if (typeof FILTER_MODE !== 'undefined' && FILTER_MODE === 'smart') {
-    all = all.filter(isAltRelevant);
-  }
-
-
-  // Filter to alternative-markets relevant items (sector-aware)
-  if (FILTER_MODE === 'smart') {
-    all = all.filter(isAltRelevant);
-  }
-
-  // Keep feed strictly alternatives (reduces macro noise)
-// Sort by recency (most recent first)
+  // Sort by recency
   all.sort((a, b) => (b._ts || 0) - (a._ts || 0));
-  // Compute quality score + theme
-  all = all.map(a => {
-    const qa = { ...a };
-    qa.qscore = qualityScore(qa);
-    qa.theme = classifyTheme(qa);
-    return qa;
-  });
-
-  // Build Live view list (high-signal only)
-  let liveList = all.slice().filter(a => a.qscore >= QUALITY_THRESHOLD_LIVE);
-  liveList.sort((a,b)=>(b._ts||0)-(a._ts||0));
-  liveList = liveList.slice(0, LIVE_MAX_ITEMS);
-
-  window._liveArticles = liveList;
-  window._allArticles = all;
-
-// Deduplicate by "story" — cluster across sources and prefer full-access links
-  const extractOriginalUrl = (u) => {
-    try {
-      if (!u) return u;
-      const url = new URL(u);
-      // Google News RSS often wraps the real URL as a query param
-      // Common params: url=, u=
-      const qs = url.searchParams;
-      const real = qs.get('url') || qs.get('u');
-      if (real) return decodeURIComponent(real);
-      return u;
-    } catch { return u; }
-  };
-
-  const getDomain = (u) => {
-    try { return (new URL(u)).hostname.replace(/^www\./,''); } catch { return ''; }
-  };
-
-  const pickBetter = (a, b) => {
-    const aPay = !!a.paywall, bPay = !!b.paywall;
-
-    // 1) Prefer non-paywall (full story accessible)
-    if (aPay !== bPay) return aPay ? b : a;
-
-    // 2) Prefer direct publisher over aggregators (e.g., Google News), if access is the same
-    const aAgg = /google/i.test(a.source || '') || /news\.google\.com/i.test(a.url || '');
-    const bAgg = /google/i.test(b.source || '') || /news\.google\.com/i.test(b.url || '');
-    if (aAgg !== bAgg) return aAgg ? b : a;
-
-    // 3) Prefer higher relevance
-    const ar = Number(a.rel || 0), br = Number(b.rel || 0);
-    if (ar !== br) return ar > br ? a : b;
-
-    // 4) Prefer richer snippet/body
-    const al = (a.body || '').length, bl = (b.body || '').length;
-    if (al !== bl) return al > bl ? a : b;
-
-    // 5) Prefer newer
-    const at = a._ts || 0, bt = b._ts || 0;
-    if (at !== bt) return at > bt ? a : b;
-
-    return a;
-  };
-
-  const STOP = new Set([
-    'the','a','an','and','or','to','of','in','for','on','with','as','at','by','from','into','after','over',
-    'its','it','this','that','these','those','says','say','saying','shows','show','memo','report','reports',
-    'update','exclusive','breaking'
-  ]);
-
-  const cleanTitle = (t) => (t || '')
-    .replace(/\s+[-–—]\s+(reuters|bloomberg(\.com)?|ft(\.com)?|financial times|wsj|wall street journal)\s*$/i,'')
-    .replace(/\s+[-–—]\s+[A-Za-z0-9\.\s]{2,40}\s*$/,'') // generic trailing source tag
-    .trim();
-
-  const tokenize = (t) => cleanTitle(t).toLowerCase()
-    .replace(/&amp;|&quot;|&#39;/g, ' ')
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .split(' ')
-    .filter(w => w && !STOP.has(w) && w.length > 2);
-
-  const signature = (t) => {
-    const toks = tokenize(t);
-    // Keep order but take first 10 meaningful tokens — good clustering across sources
-    return toks.slice(0, 10).join(' ');
-  };
-
-  // Attach canonical URL + domain
-  all = all.map(a => {
-    const canon = extractOriginalUrl(a.url);
-    return { ...a, _canonUrl: canon, _domain: getDomain(canon) };
-  });
-
-  // 1) Strong dedup by canonical URL (when available)
-  const byUrl = new Map();
-  all.forEach(a => {
-    const key = (a._canonUrl || a.url || '').split('#')[0];
-    if (!key) return;
-    const prev = byUrl.get(key);
-    byUrl.set(key, prev ? pickBetter(prev, a) : a);
-  });
-  all = Array.from(byUrl.values());
-
-  // 2) Story clustering by title signature (handles "same story different source")
-  const bySig = new Map();
-  all.forEach(a => {
-    const key = signature(a.title);
-    if (!key) return;
-    const prev = bySig.get(key);
-    bySig.set(key, prev ? pickBetter(prev, a) : a);
-  });
-  all = Array.from(bySig.values());
-
-  // 3) Near-duplicate title dedup (Jaccard similarity) — catches reworded duplicates across sources
-  const jaccard = (A, B) => {
-    if (!A.size || !B.size) return 0;
-    let inter = 0;
-    for (const x of A) if (B.has(x)) inter++;
-    const union = A.size + B.size - inter;
-    return union ? inter / union : 0;
-  };
-
-  const tokenSet = (t) => new Set(tokenize(t)); // tokenize() defined above in this block
-  const NEAR_DUP_THRESHOLD = 0.72; // tune: higher = stricter
-
-  const dedupNear = (arr) => {
-    const kept = [];
-    const sets = [];
-    for (const a of arr) {
-      const sA = tokenSet(a.title);
-      let dupIdx = -1;
-      for (let i = 0; i < kept.length; i++) {
-        const sim = jaccard(sA, sets[i]);
-        if (sim >= NEAR_DUP_THRESHOLD) { dupIdx = i; break; }
-      }
-      if (dupIdx === -1) {
-        kept.push(a); sets.push(sA);
-      } else {
-        kept[dupIdx] = pickBetter(kept[dupIdx], a);
-        sets[dupIdx] = tokenSet(kept[dupIdx].title);
-      }
-    }
-    return kept;
-  };
-
-  all = dedupNear(all);
-
-  // 4) Topic throttle — reduce "same issuer everywhere" effect (e.g., Blue Owl)
-  // Keep up to N stories per entity per sector in last 48h (newest ones win).
-  const ENTITY_WINDOW_HOURS = 48;
-  const MAX_PER_ENTITY = 2;
-
-  const KNOWN_ENTITIES = [
-    "Blue Owl", "Bank of America", "BofA", "Apollo", "Blackstone", "Brookfield", "KKR", "Ares",
-    "Carlyle", "Sixth Street", "TPG", "Warburg Pincus", "Thoma Bravo", "Vista", "Advent",
-    "Macquarie", "Stonepeak", "IFM", "GIP", "Oaktree"
-  ];
-
-  const detectEntity = (title) => {
-    if (!title) return "";
-    for (const e of KNOWN_ENTITIES) {
-      const re = new RegExp("\\b" + e.replace(/[-\/\\^$*+?.()|[\\]{}]/g, "\\$&") + "\\b", "i");
-      if (re.test(title)) return e;
-    }
-    const m = title.match(/^([A-Z][A-Za-z&]+)(\s+[A-Z][A-Za-z&]+){0,2}/);
-    return m ? m[0].trim() : "";
-  };
-
-  all = all.map(a => ({ ...a, _entity: detectEntity(a.title) }));
-
-  // Sort first so throttle keeps newest
-  all.sort((a,b)=>(b._ts||0)-(a._ts||0));
-
-  const cutoff = Date.now() - ENTITY_WINDOW_HOURS*60*60*1000;
-  const counts = new Map(); // key: sector|entity
-  const throttled = [];
-  for (const a of all) {
-    const ent = a._entity || "";
-    if (!ent) { throttled.push(a); continue; }
-    if ((a._ts||0) < cutoff) { throttled.push(a); continue; }
-    const key = `${a.sector}|${ent.toLowerCase()}`;
-    const c = counts.get(key) || 0;
-    if (c < MAX_PER_ENTITY) {
-      counts.set(key, c+1);
-      throttled.push(a);
-    }
-  }
-  all = throttled;
-
-
-
-  // Re-assign sequential IDs
-  all = all.map((a, i) => ({ ...a, id: i + 1 }));
 
   if (all.length === 0) {
-    console.warn('All feeds failed — showing demo data');
     articles = getDemoArticles();
   } else {
     articles = all;
   }
+
+  // Live briefing = top by qscore from last 24h
+  const h24 = Date.now() - 24 * 60 * 60 * 1000;
+  window._liveArticles = articles
+    .filter(a => !a._ts || a._ts >= h24)
+    .sort((a, b) => (b.qscore || 0) - (a.qscore || 0))
+    .slice(0, 12);
 
   currentFilter = sector || 'all';
   renderHero();
   renderFeed();
   renderSidebar();
 }
+
 
 function timeAgo(dateStr) {
   if (!dateStr) return 'recently';
@@ -1670,29 +1345,51 @@ function timeAgo(dateStr) {
 // HERO
 // ─────────────────────────────────────
 function renderHero() {
-  const top3 = articles.slice(0,3);
+  const now = Date.now();
+  const h24 = 24 * 60 * 60 * 1000;
+
+  // Top 3 by qscore from last 24 hours; fallback to all articles if not enough
+  let pool = articles.filter(a => a._ts && (now - a._ts) <= h24);
+  if (pool.length < 3) pool = articles; // fallback to all if feeds are slow
+
+  const top3 = pool.slice().sort((a,b) => (b.qscore||0) - (a.qscore||0)).slice(0,3);
+
   const colors = { PE:'var(--pe-c)', Credit:'var(--credit-c)', Infra:'var(--infra-c)', RE:'var(--re-c)', Hedge:'var(--hedge-c)', Macro:'var(--macro-c)' };
+
   document.getElementById('hero-strip').innerHTML = top3.map(a => `
     <a class="hero-story" href="${a.url || '#'}" target="_blank" style="cursor:pointer; text-decoration:none; color:inherit; display:block;">
-      <div class="hero-kicker" style="color:${colors[a.sector] || 'var(--ink-mid)'}">${a.sector} · ${a.source}</div>
+      <div class="hero-kicker" style="color:${colors[a.sector] || 'var(--ink-mid)'}">
+        ${a.sector} · ${a.source}
+        <span style="font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-dim);margin-left:8px;">${a.time}</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:8px;background:${colors[a.sector]||'var(--ink-dim)'};color:#fff;padding:1px 5px;margin-left:4px;opacity:0.85;">${a.qscore||0}</span>
+      </div>
       <div class="hero-headline">${a.title}</div>
-      <div class="hero-deck">${(a.body||'').substring(0,120)}…</div>
-    </div>
+      <div class="hero-deck">${(a.body||'').substring(0,130)}…</div>
+    </a>
   `).join('');
 }
 
 // ─────────────────────────────────────
 // FEED
 // ─────────────────────────────────────
+
+function whyItMatters(a) {
+  const t = ((a.title||'') + ' ' + (a.body||'')).toLowerCase();
+  if (/(first close|final close|fundraise|raised|hard cap|close on)/i.test(t)) return 'LP allocation signal — indicates appetite for this strategy and vintage.';
+  if (/(lbo|take.private|acqui|buyout|merger)/i.test(t)) return 'Deal activity — relevant for comparable valuations and sector momentum.';
+  if (/(secondar|gp.led|continuation|gp stake)/i.test(t)) return 'Liquidity signal — reflects GP sentiment and portfolio valuations.';
+  if (/(nav loan|direct lending|private credit|unitranche)/i.test(t)) return 'Credit market signal — impacts cost of capital and deal structuring.';
+  if (/(default|distress|restructur|redemption|gate)/i.test(t)) return 'Watch for contagion risk — potential impact on valuations and redemptions.';
+  if (a.sector === 'Infra') return 'Infrastructure deployment signal — energy transition and digital infra remain LP priorities.';
+  if (a.sector === 'RE') return 'Real estate repricing — cap rate movements affect RE fund NAVs and exit timing.';
+  if (a.sector === 'Credit') return 'Credit dynamics — directly affects direct lending returns and deal flow.';
+  if (a.sector === 'Hedge') return 'Hedge fund positioning — relevant for liquid alts allocators.';
+  return 'Private markets intelligence — relevant for LP allocators and fund managers.';
+}
+
 function renderFeed() {
-  const base = (window._allArticles && window._allArticles.length) ? window._allArticles : articles;
-  const live = (window._liveArticles && window._liveArticles.length) ? window._liveArticles : [];
-  const list = (currentFilter === 'live' && BRIEFING_MODE) ? live : (currentFilter === 'all' ? base : base.filter(a => a.sector === currentFilter));
-  const allCount = base.length;
-  const liveCount = live.length;
-  document.getElementById('feed-count').textContent = (currentFilter === 'live' && BRIEFING_MODE)
-    ? `— ${liveCount} high-signal / ${allCount} total`
-    : `— ${list.length} article${list.length !== 1 ? 's' : ''}`;
+  const list = currentFilter === 'all' ? articles : articles.filter(a => a.sector === currentFilter);
+  document.getElementById('feed-count').textContent = `— ${list.length} article${list.length !== 1 ? 's' : ''}`;
 
   if (!list.length) {
     document.getElementById('feed-container').innerHTML = `<div style="padding:40px 0; text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-dim)">No articles in this sector</div>`;
@@ -1714,6 +1411,7 @@ function renderFeed() {
         </div>
         <div class="article-headline">${a.title}</div>
         <div class="article-body">${a.body || ''}</div>
+        <div class="article-why"><span class="why-label">Why it matters</span>${whyItMatters(a)}</div>
         ${a.aiSummary ? `
         <div class="ai-summary-wrap">
           <div class="ai-label">✦ AI Analysis</div>
@@ -1722,8 +1420,8 @@ function renderFeed() {
         ` : ''}
         <div class="article-actions">
           ${a.paywall
-            ? '<span class="read-more" style="opacity:0.7;">🔒 Read Article →</span>'
-            : '<span class="read-more">Full Story →</span>'
+            ? '<span class="read-more">🔒 Read Article →</span>'
+            : '<span class="read-more">Read Free →</span>'
           }
           <div class="rel-score"><div class="rel-dots">${dots}</div>${rel}%</div>
           <button class="action-btn ${a.aiSummary ? 'summarized' : ''}"
@@ -1740,20 +1438,10 @@ function renderFeed() {
   `}).join('');
 }
 
-
-function initActiveNav() {
-  const liveBtn = document.getElementById('btn-live');
-  const allBtn  = document.getElementById('btn-all');
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  if (currentFilter === 'live' && liveBtn) liveBtn.classList.add('active');
-  else if (allBtn) allBtn.classList.add('active');
-}
-
 function filter(sector, btn) {
   currentFilter = sector;
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  else initActiveNav();
+  btn.classList.add('active');
   renderFeed();
   renderSidebar();
 }
@@ -1829,8 +1517,7 @@ async function summarize(id, btn) {
 
     // re-render current view
     renderFeed(currentFilter);
-  autoBriefIfNeeded();
-} catch (e) {
+  } catch (e) {
     console.error(e);
     alert('AI Analyze failed. Check proxy is running and API key is set.');
   } finally {
@@ -1935,127 +1622,6 @@ function getDemoArticles() {
     { id:4, sector:"Credit", source:"Private Equity Wire", title:"Apollo Posts 13% Rise in Q4 Profit on Record Debt Origination", body:"Apollo Global Management posted a 13% rise in fourth-quarter profit, surpassing Wall Street estimates, driven by record debt origination and strong inflows from clients seeking private credit alternatives.", time:"7h ago", rel:87, aiSummary:null, url:"https://www.privateequitywire.co.uk/news/" },
     { id:5, sector:"RE", source:"Private Equity Wire", title:"Brookfield and GIC Propose AUD4bn Take-Private of National Storage REIT", body:"National Storage REIT received a AUD4.02bn buyout proposal from a consortium led by Brookfield and GIC, marking what would be Australia largest real-estate take-private deal.", time:"9h ago", rel:84, aiSummary:null, url:"https://www.privateequitywire.co.uk/news/" },
   ];
-}
-// ─────────────────────────────────────
-// Daily Executive Brief (auto + editable + email)
-// ─────────────────────────────────────
-const briefStorageKey = () => `altintel_brief_${new Date().toISOString().slice(0,10)}`;
-
-function buildBriefLocal(items) {
-  const today = new Date();
-  const dateStr = today.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'short', day:'numeric' });
-
-  // group by theme
-  const groups = new Map();
-  items.forEach(a => {
-    const key = a.theme || 'Market';
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(a);
-  });
-
-  const order = ['Liquidity / Stress','Fundraising','Transactions','Credit / Financing','Secondaries / GP Stakes','AI Impact','Market'];
-  const lines = [];
-  lines.push(`PRIVATE MARKETS – DAILY BRIEF`);
-  lines.push(`${dateStr}`);
-  lines.push('');
-
-  let n = 1;
-  for (const k of order) {
-    const arr = groups.get(k) || [];
-    if (!arr.length) continue;
-    lines.push(k.toUpperCase());
-    arr.slice(0, 4).forEach(a => {
-      lines.push(`${n}. ${a.title}`);
-      lines.push(`   Source: ${a.source} | Sector: ${a.sector} | ${a.time}`);
-      lines.push(`   Link: ${a.url}`);
-      lines.push(`   ALT TAKE: (edit) What happened / Why it matters / Watch next`);
-      lines.push('');
-      n++;
-    });
-    lines.push('');
-  }
-
-  if (n === 1) {
-    lines.push('No high-signal stories met the threshold yet. Switch to full sectors to browse everything.');
-  }
-
-  return lines.join('\n').trim();
-}
-
-async function generateDailyBrief() {
-  const out = document.getElementById('briefing-output');
-  const btn = document.getElementById('gen-btn');
-  try {
-    if (btn) btn.disabled = true;
-
-    const base = (window._liveArticles && window._liveArticles.length) ? window._liveArticles : (articles || []);
-    const items = base.slice().sort((a,b)=>(b._ts||0)-(a._ts||0)).slice(0, DAILY_BRIEF_MAX_ITEMS);
-
-    // Try AI proxy if configured, else fallback local template
-    const api = (typeof API_BASE !== 'undefined' && API_BASE) ? `${API_BASE}/api/briefing` : null;
-
-    if (api) {
-      const res = await fetch(api, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ items: items.map(a => ({ title:a.title, url:a.url, source:a.source, sector:a.sector, time:a.time })) })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const txt = data.briefing || '';
-        if (out) out.value = txt;
-        localStorage.setItem(briefStorageKey(), txt);
-        localStorage.setItem('altintel_last_brief_date', new Date().toISOString().slice(0,10));
-        return;
-      }
-    }
-
-    const txt = buildBriefLocal(items);
-    if (out) out.value = txt;
-    localStorage.setItem(briefStorageKey(), txt);
-    localStorage.setItem('altintel_last_brief_date', new Date().toISOString().slice(0,10));
-  } catch (e) {
-    console.error(e);
-    alert('Brief generation failed (proxy optional). Falling back to local template.');
-    const base = (window._liveArticles && window._liveArticles.length) ? window._liveArticles : (articles || []);
-    const items = base.slice().sort((a,b)=>(b._ts||0)-(a._ts||0)).slice(0, DAILY_BRIEF_MAX_ITEMS);
-    const txt = buildBriefLocal(items);
-    if (out) out.value = txt;
-  } finally {
-    if (btn) btn.disabled = false;
-  }
-}
-
-function autoBriefIfNeeded() {
-  const today = new Date().toISOString().slice(0,10);
-  const last = localStorage.getItem('altintel_last_brief_date') || '';
-  const saved = localStorage.getItem(briefStorageKey());
-
-  const out = document.getElementById('briefing-output');
-  if (saved && out && !out.value) out.value = saved;
-
-  // Auto-generate after the configured hour once per day
-  const h = new Date().getHours();
-  if (h >= DAILY_BRIEF_HOUR_LOCAL && last !== today) {
-    generateDailyBrief();
-  }
-}
-
-function copyBrief() {
-  const out = document.getElementById('briefing-output');
-  if (!out) return;
-  out.select();
-  document.execCommand('copy');
-}
-
-function emailBrief() {
-  const out = document.getElementById('briefing-output');
-  const body = encodeURIComponent(out ? out.value : '');
-  const subj = encodeURIComponent(`ALT Intel – Daily Brief (${new Date().toISOString().slice(0,10)})`);
-  // Opens the user's mail client; you can paste recipients
-  window.location.href = `mailto:?subject=${subj}&body=${body}`;
-}
-
-</script>
+}</script>
 </body>
 </html>
