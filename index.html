@@ -974,28 +974,27 @@ body::before {
 
 <script>
 // ─────────────────────────────────────
-// RSS FEEDS — MORE OPEN SOURCES ADDED!
+// RSS FEEDS — HYBRID APPROACH (Open + Premium)
 // ─────────────────────────────────────
 const RSS_FEEDS = [
-  // ── Open / Free Sources (No Hard Paywall) ─────────
-  { url: "https://pitchbook.com/blog/rss.xml",                       source: "PitchBook",       sector: "PE",    paywall: false },
+  // ── Open / Free Sources (Get +15 Score Bonus) ─────────
+  { url: "https://pitchbook.com/blog/rss.xml",                       source: "PitchBook (Open)",sector: "PE",    paywall: false },
   { url: "https://altassets.net/feed",                               source: "AltAssets",       sector: "PE",    paywall: false },
   { url: "https://techcrunch.com/category/venture/feed/",            source: "TechCrunch VC",   sector: "PE",    paywall: false },
   { url: "https://renewablesnow.com/news/rss/",                      source: "Renewables Now",  sector: "Infra", paywall: false },
   { url: "https://www.rechargenews.com/rss",                         source: "Recharge News",   sector: "Infra", paywall: false },
-  { url: "https://www.pv-tech.org/feed/",                            source: "PV Tech",         sector: "Infra", paywall: false },
   { url: "https://therealdeal.com/feed/",                            source: "The Real Deal",   sector: "RE",    paywall: false },
-  { url: "https://www.globest.com/feed/",                            source: "GlobeSt",         sector: "RE",    paywall: false },
   { url: "https://www.commercialobserver.com/feed/",                 source: "Commercial Observer", sector: "RE", paywall: false },
   { url: "https://opalesque.com/rss.xml",                            source: "Opalesque",       sector: "Hedge", paywall: false },
-  
-  // ── Google News Queries (Bypasses many soft paywalls) ─────────
   { url: "https://news.google.com/rss/search?q=%22private+equity%22+OR+%22private+credit%22+site:yahoo.com&hl=en-US&gl=US&ceid=US:en", source: "Yahoo Finance", sector: "Macro", paywall: false },
   { url: "https://news.google.com/rss/search?q=%22private+equity%22+OR+%22hedge+fund%22+site:cnbc.com&hl=en-US&gl=US&ceid=US:en", source: "CNBC", sector: "Macro", paywall: false },
-  { url: "https://news.google.com/rss/search?q=%22private+markets%22+OR+%22private+equity%22+site:institutionalinvestor.com&hl=en-US&gl=US&ceid=US:en", source: "Inst. Investor", sector: "Macro", paywall: false },
   { url: "https://news.google.com/rss/search?q=site:reuters.com+(%22private+equity%22+OR+%22private+credit%22+OR+%22hedge+fund%22)&hl=en-US&gl=US&ceid=US:en", source: "Reuters", sector: "Macro", paywall: false },
 
-  // ── Premium Sources (Kept a few because they have the best deal flow headlines)
+  // ── Premium / Closed Sources (Get slight penalty, but are kept for breaking major news) ─────────
+  { url: "https://news.google.com/rss/search?q=site:bloomberg.com+(%22private+equity%22+OR+%22private+credit%22)&hl=en-US&gl=US&ceid=US:en", source: "Bloomberg", sector: "PE", paywall: true },
+  { url: "https://news.google.com/rss/search?q=pitchbook+%22private+equity%22+OR+%22private+credit%22&hl=en-US&gl=US&ceid=US:en", source: "PitchBook News", sector: "PE", paywall: true },
+  { url: "https://feeds.content.dowjones.io/public/rss/RSSMarketsMain", source: "WSJ Markets", sector: "Macro", paywall: true },
+  { url: "https://www.ft.com/stream/ab70c42c-4d60-4851-89bb-16e2daeddfc1?format=rss", source: "Financial Times", sector: "PE", paywall: true },
   { url: "https://www.privateequitywire.co.uk/feed/",                source: "PE Wire",         sector: "PE",    paywall: true  },
   { url: "https://www.infrastructureinvestor.com/feed/",             source: "Infra Investor",  sector: "Infra", paywall: true  },
   { url: "https://www.perenews.com/feed/",                           source: "PERE News",       sector: "RE",    paywall: true  },
@@ -1037,11 +1036,11 @@ function guessSector(title, body, defaultSector) {
   return defaultSector;
 }
 
-const TIER1 = ['PitchBook', 'Inst. Investor', 'Reuters', 'Bloomberg', 'PE Wire', 'Yahoo Finance', 'CNBC'];
+const TIER1 = ['PitchBook', 'Bloomberg', 'Financial Times', 'WSJ Markets', 'Reuters', 'PE Wire', 'Yahoo Finance', 'CNBC'];
 const TIER2 = ['TechCrunch VC', 'The Real Deal', 'AltAssets', 'Renewables Now', 'GlobeSt'];
 
 // ──────────────────────────────────────────────────────────
-// משופר: חישוב הציון שנותן בונוס עצום לנושאי מאקרו/טכנולוגיה
+// משופר: איזון חכם בין מקורות פתוחים לסגורים
 // ──────────────────────────────────────────────────────────
 function qualityScore(a) {
   const title = (a.title || '').toLowerCase();
@@ -1050,30 +1049,34 @@ function qualityScore(a) {
   
   let score = 25; 
 
-  if (TIER1.some(x => a.source.includes(x))) score += 20;
+  if (TIER1.some(x => a.source.includes(x))) score += 15;
   else if (TIER2.some(x => a.source.includes(x))) score += 10;
+
+  // === הבונוס החדש: קידום מקורות פתוחים (Open Content Boost) ===
+  // כתבות חינמיות יקבלו קפיצה משמעותית שתיתן להן "יותר מקום".
+  // כתבות סגורות מבלומברג למשל יקבלו קנס קטן - אלא אם הן באמת חדשות ענקיות (גיוס/מאקרו)
+  if (a.paywall === false) {
+    score += 15; // דחיפה למקורות הפתוחים
+  } else {
+    score -= 5;  // קנס קל למקורות סגורים
+  }
 
   // בונוס בסיסי לאירועי קרנות וגיוסים
   const fundEventKeywords = ["fundraise", "fundraising", "raised", "raising", "closes", "closed", "first close", "final close", "hard cap", "target", "launches fund", "new fund", "vintage", "gp-led", "dry powder", "lp", "limited partner", "commitment"];
-  if (fundEventKeywords.some(kw => fullText.includes(kw))) score += 25; 
+  if (fundEventKeywords.some(kw => fullText.includes(kw))) score += 20; 
   if (fundEventKeywords.some(kw => title.includes(kw))) score += 10;
 
-  // === הבונוס החדש: השפעת מאקרו וטכנולוגיה (Macro & Tech Impact) ===
-  // הוספנו פה בונוס שדוחף כתבות על תוכנה, AI, השפעות ריבית או רגולציה ישירות למעלה
+  // בונוס מאקרו וטכנולוגיה
   const macroTechKeywords = [
     "software", "saas", "tech valuation", "artificial intelligence", "ai startup", "openai", "anthropic",
     "interest rate", "fed", "federal reserve", "rate cut", "inflation", 
     "downturn", "distressed", "layoffs", "restructuring", "bankruptcy", 
     "sec", "regulation", "antitrust", "doj"
   ];
-  if (macroTechKeywords.some(kw => fullText.includes(kw))) {
-    score += 35; // בונוס מאוד משמעותי
-  }
-  if (macroTechKeywords.some(kw => title.includes(kw))) {
-    score += 15; // אם זה בכותרת, עוד יותר טוב
-  }
+  if (macroTechKeywords.some(kw => fullText.includes(kw))) score += 30;
+  if (macroTechKeywords.some(kw => title.includes(kw))) score += 15;
 
-  // עונש לכתבות "לייף סטייל" או צרכנות שלא רלוונטיות לתעשייה
+  // עונש לכתבות צרכנות ולייף סטייל
   const consumerKeywords = ["watchmaker", "dolls", "toy", "lifestyle", "luxury brand", "retailer", "hasbro", "mattel", "movie", "celebrity"];
   if (consumerKeywords.some(kw => fullText.includes(kw))) score -= 40;
 
@@ -1129,7 +1132,6 @@ async function fetchFeed(feed) {
     const body = (item.description || item.content || '').replace(/<[^>]+>/g, '').substring(0, 300);
     const sec = guessSector(title, body, feed.sector);
     
-    // יוצרים אובייקט בסיסי
     let articleObj = {
       id: nextId++,
       title: title,
@@ -1143,10 +1145,9 @@ async function fetchFeed(feed) {
       _ts: new Date(item.pubDate || item.updated || 0).getTime() || 0,
       paywall: feed.paywall || false,
       aiSummary: null,
-      qscore: 0 // יתעדכן מיד
+      qscore: 0 
     };
     
-    // מפעילים את חישוב הציון כבר עכשיו כדי שה-Hero יקבל מידע עדכני
     articleObj.qscore = qualityScore(articleObj);
     return articleObj;
   });
@@ -1209,26 +1210,20 @@ async function loadArticles(sector = null) {
     articles = getDemoArticles();
   }
 
-  // מיון לפי זמן
   articles.sort((a, b) => (b._ts || 0) - (a._ts || 0));
 
   currentFilter = sector || 'all';
   
-  // חשוב: קוראים לפונקציות לפי הסדר אחרי שכל הציונים כבר חושבו במשיכה
   updateTicker();
   renderHero();
   renderFeed();
   renderSidebar();
 }
 
-// ──────────────────────────────────────────────────────────
-// חדש: פונקציה שמעדכנת את פס ה-Ticker בכתבות אמיתיות חמות
-// ──────────────────────────────────────────────────────────
 function updateTicker() {
   const tickerInner = document.getElementById('ticker-inner');
   if(!articles || articles.length === 0) return;
 
-  // ניקח את ה-10 כתבות האחרונות ביותר או אלו עם ציון גבוה
   const topForTicker = articles.slice()
                                .sort((a,b) => (b._ts||0) - (a._ts||0))
                                .slice(0, 10);
@@ -1237,10 +1232,8 @@ function updateTicker() {
     `<span class="ticker-item"><strong>${a.source.toUpperCase()}</strong> ${a.title}</span>`
   ).join('');
 
-  // מכפילים את התוכן כדי לאפשר גלילה אינסופית רציפה
   tickerInner.innerHTML = tickerHtml + tickerHtml;
 }
-
 
 function timeAgo(dateStr) {
   if (!dateStr) return 'recently';
@@ -1255,7 +1248,6 @@ function timeAgo(dateStr) {
 // HERO
 // ─────────────────────────────────────
 function renderHero() {
-  // עכשיו ה-qscore מעודכן מראש אז ה-sort יעבוד באופן מושלם ויביא את כתבות המאקרו/תוכנה למעלה
   const top3 = articles.slice()
                        .sort((a,b) => (b.qscore||0) - (a.qscore||0))
                        .slice(0,3);
@@ -1282,7 +1274,6 @@ function renderHero() {
 function whyItMatters(a) {
   const t = ((a.title||'') + ' ' + (a.body||'')).toLowerCase();
   
-  // הוספת הסבר חכם עבור טכנולוגיה ומאקרו
   if (/(software|saas|tech valuation|downturn)/i.test(t)) return 'Tech Sector Impact — affects private equity portfolios heavily weighted towards SaaS and software buyouts.';
   if (/(ai|artificial intelligence|openai|anthropic)/i.test(t)) return 'AI Disruption — requires GPs to evaluate structural impacts on existing portfolios and opens new infra/VC opportunities.';
   if (/(interest rate|fed|inflation|rate cut)/i.test(t)) return 'Macro Headwind/Tailwind — directly influences cost of debt, valuations, and exit environments across all private markets.';
@@ -1483,7 +1474,7 @@ async function subscribe() {
 function getDemoArticles() {
   return [
     { id:1, sector:"Macro", source:"Reuters", title:"Fed Signals Further Rate Caution Following Persistent Inflation Data", body:"Federal Reserve officials signaled they are in no rush to cut interest rates, creating a challenging environment for software buyouts and highly leveraged Private Equity portfolios that rely on cheap debt.", time:"1h ago", rel:95, aiSummary:null, qscore: 95, url:"#" },
-    { id:2, sector:"PE", source:"PitchBook", title:"Thoma Bravo Eyes Software Market Downturn Dubbed the SaaSpocalypse", body:"Tech-focused buyout firm Thoma Bravo is looking to capitalise on the ongoing software market downturn, as a disconnect between high-quality firms and riskier software providers creates selective entry points.", time:"3h ago", rel:91, aiSummary:null, qscore: 90, url:"#" },
+    { id:2, sector:"PE", source:"PitchBook (Open)", title:"Thoma Bravo Eyes Software Market Downturn Dubbed the SaaSpocalypse", body:"Tech-focused buyout firm Thoma Bravo is looking to capitalise on the ongoing software market downturn, as a disconnect between high-quality firms and riskier software providers creates selective entry points.", time:"3h ago", rel:91, aiSummary:null, qscore: 90, url:"#" },
     { id:3, sector:"Hedge", source:"CNBC", title:"Blackstone Expands Anthropic Stake to Around $1bn amid AI Boom", body:"Blackstone has expanded its investment in AI startup Anthropic, bringing its total stake to around $1bn at the current valuation, signalling continued institutional appetite for AI infrastructure exposure.", time:"5h ago", rel:88, aiSummary:null, qscore: 85, url:"#" }
   ];
 }
