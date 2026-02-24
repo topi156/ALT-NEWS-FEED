@@ -1039,9 +1039,6 @@ function guessSector(title, body, defaultSector) {
 const TIER1 = ['PitchBook', 'Bloomberg', 'Financial Times', 'WSJ Markets', 'Reuters', 'PE Wire', 'Yahoo Finance', 'CNBC'];
 const TIER2 = ['TechCrunch VC', 'The Real Deal', 'AltAssets', 'Renewables Now', 'GlobeSt'];
 
-// ──────────────────────────────────────────────────────────
-// משופר: איזון חכם בין מקורות פתוחים לסגורים
-// ──────────────────────────────────────────────────────────
 function qualityScore(a) {
   const title = (a.title || '').toLowerCase();
   const body = (a.body || '').toLowerCase();
@@ -1052,21 +1049,16 @@ function qualityScore(a) {
   if (TIER1.some(x => a.source.includes(x))) score += 15;
   else if (TIER2.some(x => a.source.includes(x))) score += 10;
 
-  // === הבונוס החדש: קידום מקורות פתוחים (Open Content Boost) ===
-  // כתבות חינמיות יקבלו קפיצה משמעותית שתיתן להן "יותר מקום".
-  // כתבות סגורות מבלומברג למשל יקבלו קנס קטן - אלא אם הן באמת חדשות ענקיות (גיוס/מאקרו)
   if (a.paywall === false) {
-    score += 15; // דחיפה למקורות הפתוחים
+    score += 15; 
   } else {
-    score -= 5;  // קנס קל למקורות סגורים
+    score -= 5;  
   }
 
-  // בונוס בסיסי לאירועי קרנות וגיוסים
   const fundEventKeywords = ["fundraise", "fundraising", "raised", "raising", "closes", "closed", "first close", "final close", "hard cap", "target", "launches fund", "new fund", "vintage", "gp-led", "dry powder", "lp", "limited partner", "commitment"];
   if (fundEventKeywords.some(kw => fullText.includes(kw))) score += 20; 
   if (fundEventKeywords.some(kw => title.includes(kw))) score += 10;
 
-  // בונוס מאקרו וטכנולוגיה
   const macroTechKeywords = [
     "software", "saas", "tech valuation", "artificial intelligence", "ai startup", "openai", "anthropic",
     "interest rate", "fed", "federal reserve", "rate cut", "inflation", 
@@ -1076,7 +1068,6 @@ function qualityScore(a) {
   if (macroTechKeywords.some(kw => fullText.includes(kw))) score += 30;
   if (macroTechKeywords.some(kw => title.includes(kw))) score += 15;
 
-  // עונש לכתבות צרכנות ולייף סטייל
   const consumerKeywords = ["watchmaker", "dolls", "toy", "lifestyle", "luxury brand", "retailer", "hasbro", "mattel", "movie", "celebrity"];
   if (consumerKeywords.some(kw => fullText.includes(kw))) score -= 40;
 
@@ -1245,12 +1236,24 @@ function timeAgo(dateStr) {
 }
 
 // ─────────────────────────────────────
-// HERO
+// HERO - 24 HOURS LIMIT
 // ─────────────────────────────────────
 function renderHero() {
-  const top3 = articles.slice()
-                       .sort((a,b) => (b.qscore||0) - (a.qscore||0))
-                       .slice(0,3);
+  const now = Date.now();
+  const H24 = 24 * 60 * 60 * 1000;
+
+  // סינון לכתבות מה-24 שעות האחרונות בלבד
+  let recentArticles = articles.filter(a => a._ts && (now - a._ts) <= H24);
+
+  // הגנת UI: אם אין שום כתבה מהיממה האחרונה, ניקח מכל המאגר כדי לא לשבור את העיצוב (רק למקרה קיצון)
+  if (recentArticles.length === 0) {
+    recentArticles = articles;
+  }
+
+  // מיון לפי הציון ולקיחת ה-3 הטובות ביותר (מתוך אלו שעברו את סינון הזמן)
+  const top3 = recentArticles.slice()
+                             .sort((a,b) => (b.qscore||0) - (a.qscore||0))
+                             .slice(0,3);
 
   const colors = { PE:'var(--pe-c)', Credit:'var(--credit-c)', Infra:'var(--infra-c)', RE:'var(--re-c)', Hedge:'var(--hedge-c)', Macro:'var(--macro-c)' };
 
@@ -1473,9 +1476,9 @@ async function subscribe() {
 
 function getDemoArticles() {
   return [
-    { id:1, sector:"Macro", source:"Reuters", title:"Fed Signals Further Rate Caution Following Persistent Inflation Data", body:"Federal Reserve officials signaled they are in no rush to cut interest rates, creating a challenging environment for software buyouts and highly leveraged Private Equity portfolios that rely on cheap debt.", time:"1h ago", rel:95, aiSummary:null, qscore: 95, url:"#" },
-    { id:2, sector:"PE", source:"PitchBook (Open)", title:"Thoma Bravo Eyes Software Market Downturn Dubbed the SaaSpocalypse", body:"Tech-focused buyout firm Thoma Bravo is looking to capitalise on the ongoing software market downturn, as a disconnect between high-quality firms and riskier software providers creates selective entry points.", time:"3h ago", rel:91, aiSummary:null, qscore: 90, url:"#" },
-    { id:3, sector:"Hedge", source:"CNBC", title:"Blackstone Expands Anthropic Stake to Around $1bn amid AI Boom", body:"Blackstone has expanded its investment in AI startup Anthropic, bringing its total stake to around $1bn at the current valuation, signalling continued institutional appetite for AI infrastructure exposure.", time:"5h ago", rel:88, aiSummary:null, qscore: 85, url:"#" }
+    { id:1, sector:"Macro", source:"Reuters", title:"Fed Signals Further Rate Caution Following Persistent Inflation Data", body:"Federal Reserve officials signaled they are in no rush to cut interest rates, creating a challenging environment for software buyouts and highly leveraged Private Equity portfolios that rely on cheap debt.", time:"1h ago", rel:95, aiSummary:null, qscore: 95, url:"#", _ts: Date.now() - 3600000 },
+    { id:2, sector:"PE", source:"PitchBook (Open)", title:"Thoma Bravo Eyes Software Market Downturn Dubbed the SaaSpocalypse", body:"Tech-focused buyout firm Thoma Bravo is looking to capitalise on the ongoing software market downturn, as a disconnect between high-quality firms and riskier software providers creates selective entry points.", time:"3h ago", rel:91, aiSummary:null, qscore: 90, url:"#", _ts: Date.now() - 10800000 },
+    { id:3, sector:"Hedge", source:"CNBC", title:"Blackstone Expands Anthropic Stake to Around $1bn amid AI Boom", body:"Blackstone has expanded its investment in AI startup Anthropic, bringing its total stake to around $1bn at the current valuation, signalling continued institutional appetite for AI infrastructure exposure.", time:"5h ago", rel:88, aiSummary:null, qscore: 85, url:"#", _ts: Date.now() - 18000000 }
   ];
 }
 </script>
